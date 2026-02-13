@@ -35,7 +35,6 @@ if uploaded_file:
         "Select Target Column",
         df.columns
     )
-    # Save uploaded CSV temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as tmp:
         tmp.write(uploaded_file.getbuffer())
         temp_path = tmp.name
@@ -48,17 +47,15 @@ if uploaded_file:
         scaler
     ) = load_and_preprocess(temp_path, target_column)
 
-    # Train model
     model = MODEL_MAP[model_name]()
     model.fit(X_train, y_train)
 
-    # Evaluate
     metrics = evaluate_model(model, X_test, y_test)
 
     st.subheader("Evaluation Metrics")
     st.json(metrics)
 
-    # Confusion Matrix
+    
     st.subheader("Confusion Matrix")
     y_pred = model.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)

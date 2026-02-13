@@ -10,20 +10,15 @@ from sklearn.metrics import (
 )
 
 def load_and_preprocess(csv_path, target_column):
-    # Load dataset
     df = pd.read_csv(csv_path)
 
-    # Separate features and target
     X = df.drop(columns=[target_column])
     y = df[target_column]
 
-    # ✅ One-hot encode categorical features
     X = pd.get_dummies(X, drop_first=True)
 
-    # Save feature schema
     feature_columns = X.columns
 
-    # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         test_size=0.2,
@@ -31,7 +26,6 @@ def load_and_preprocess(csv_path, target_column):
         stratify=y
     )
 
-    # Feature scaling
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
@@ -57,14 +51,11 @@ def evaluate_model(model, X_test, y_test):
         "MCC": matthews_corrcoef(y_test, y_pred)
     }
 
-    # ✅ Handle AUC safely
     try:
         if len(np.unique(y_test)) == 2:
-            # Binary classification
             y_prob = model.predict_proba(X_test)[:, 1]
             metrics["AUC"] = roc_auc_score(y_test, y_prob)
         else:
-            # Multi-class classification
             y_prob = model.predict_proba(X_test)
             metrics["AUC"] = roc_auc_score(
                 y_test,
